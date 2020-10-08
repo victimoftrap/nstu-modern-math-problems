@@ -76,7 +76,7 @@ def potential_derivative_in_point(
 def potential_derivative_in_line(
         receiver_m: Point, receiver_n: Point, source_a: Point, source_b: Point,
         sigma_i: float, amperage: float) -> float:
-    """Вычислить значение производной потенциала по сигма в точке sigma_i.
+    """Вычислить значение производной потенциала по сигма в линии sigma_i.
 
 
     :param receiver_m: точка M приёмника тока

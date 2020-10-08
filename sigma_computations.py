@@ -1,4 +1,5 @@
 from point import Point
+from receivers import AbstractReceiver, DotReceiver, LineReceiver
 import potentials as pots
 
 from sys import float_info
@@ -6,7 +7,7 @@ from sys import float_info
 from typing import Tuple, List
 
 
-def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers: List[Tuple[Point, Point]],
+def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers: List[AbstractReceiver],
                                     true_sigma: float, initial_sigma: float, amperage: float) -> float:
     """Вычислить значение удельной электрической проводимости sigma.
 
@@ -27,14 +28,26 @@ def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers
 
     synthetic_potentials = []
     for receiver in receivers:
-        synthetic_pot = pots.potential_difference_in_line(
-            receiver_m=receiver[0],
-            receiver_n=receiver[1],
-            source_a=source_a,
-            source_b=source_b,
-            sigma=true_sigma,
-            amperage=amperage
-        )
+        synthetic_pot = 0
+        if isinstance(receiver, LineReceiver):
+            synthetic_pot = pots.potential_difference_in_line(
+                receiver_m=receiver.coordinate_m,
+                receiver_n=receiver.coordinate_n,
+                source_a=source_a,
+                source_b=source_b,
+                sigma=true_sigma,
+                amperage=amperage
+            )
+
+        if isinstance(receiver, DotReceiver):
+            synthetic_pot = pots.potential_difference_in_point(
+                receiver_p=receiver.coordinate_m,
+                source_a=source_a,
+                source_b=source_b,
+                sigma=true_sigma,
+                amperage=amperage
+            )
+
         synthetic_potentials.append(synthetic_pot)
 
     synthetic_omega = []
@@ -44,14 +57,25 @@ def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers
     while functional_value > epsilon:
         new_potentials = []
         for receiver in receivers:
-            potential = pots.potential_difference_in_line(
-                receiver_m=receiver[0],
-                receiver_n=receiver[1],
-                source_a=source_a,
-                source_b=source_b,
-                sigma=working_sigma,
-                amperage=amperage
-            )
+            potential = 0
+            if isinstance(receiver, LineReceiver):
+                potential = pots.potential_difference_in_line(
+                    receiver_m=receiver.coordinate_m,
+                    receiver_n=receiver.coordinate_n,
+                    source_a=source_a,
+                    source_b=source_b,
+                    sigma=working_sigma,
+                    amperage=amperage
+                )
+
+            if isinstance(receiver, DotReceiver):
+                potential = pots.potential_difference_in_point(
+                    receiver_p=receiver.coordinate_m,
+                    source_a=source_a,
+                    source_b=source_b,
+                    sigma=working_sigma,
+                    amperage=amperage
+                )
             new_potentials.append(potential)
 
         functional_value = __compute_functional__(
@@ -70,8 +94,8 @@ def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers
             omega=synthetic_omega
         )
 
-        print(synthetic_potentials)
-        print(new_potentials)
+        print("synth pots:", synthetic_potentials)
+        print("pots:", new_potentials)
         print("sigma =", working_sigma, "; F(sigma) =", functional_value)
         print("new sigma =", new_sigma, "\n")
 
@@ -98,7 +122,7 @@ def __compute_functional__(current_potentials: List[float], prev_potentials: Lis
 
 
 def __compute_new_sigma__(
-        receivers: List[Tuple[Point, Point]], prev_potentials: List[float],
+        receivers: List[AbstractReceiver], prev_potentials: List[float],
         source_a: Point, source_b: Point,
         sigma_i: float, amperage: float, omega: List[float]) -> float:
     """Вычислить новое значение sigma.
@@ -123,15 +147,28 @@ def __compute_new_sigma__(
     vector_value = 0
 
     for i in range(receiver_quantity):
-        der_potential = pots.potential_derivative_in_line(
-            receivers[i][0], receivers[i][1], source_a, source_b, sigma_i, amperage
-        )
-        matrix_value += (omega[i] * der_potential) ** 2
+        receiver = receivers[i]
+        potential = 0
+        pot_derivative = 0
 
-        potential = pots.potential_difference_in_line(
-            receivers[i][0], receivers[i][1], source_a, source_b, sigma_i, amperage
-        )
-        vector_value -= (omega[i] ** 2) * der_potential * (potential - prev_potentials[i])
+        if isinstance(receiver, LineReceiver):
+            pot_derivative = pots.potential_derivative_in_line(
+                receiver.coordinate_m, receiver.coordinate_n, source_a, source_b, sigma_i, amperage
+            )
+            potential = pots.potential_difference_in_line(
+                receiver.coordinate_m, receiver.coordinate_n, source_a, source_b, sigma_i, amperage
+            )
+
+        if isinstance(receiver, DotReceiver):
+            pot_derivative = pots.potential_derivative_in_point(
+                receiver.coordinate_m, source_a, source_b, sigma_i, amperage
+            )
+            potential = pots.potential_derivative_in_point(
+                receiver.coordinate_m, source_a, source_b, sigma_i, amperage
+            )
+
+        vector_value -= (omega[i] ** 2) * pot_derivative * (potential - prev_potentials[i])
+        matrix_value += (omega[i] * pot_derivative) ** 2
 
     delta_sigma = vector_value / matrix_value
     return sigma_i + delta_sigma

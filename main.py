@@ -1,12 +1,13 @@
 from point import Point
+from receivers import LineReceiver, DotReceiver
 import sigma_computations as sc
 
 if __name__ == "__main__":
     field_source = (Point(0, 0, 0), Point(100, 0, 0))
 
-    receivers = [(Point(200, 0, 0), Point(300, 0, 0)),
-                 (Point(500, 0, 0), Point(600, 0, 0)),
-                 (Point(1000, 0, 0), Point(1100, 0, 0))]
+    receivers = [LineReceiver(Point(200, 0, 0), Point(300, 0, 0)),
+                 LineReceiver(Point(500, 0, 0), Point(600, 0, 0)),
+                 LineReceiver(Point(1000, 0, 0), Point(1100, 0, 0))]
 
     true_sigma = 0.1
     initial_sigma = 0.01
