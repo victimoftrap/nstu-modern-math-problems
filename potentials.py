@@ -14,7 +14,7 @@ def __pre_potential__(receiver_p: Point, source_a: Point, source_b: Point) -> fl
     return 1 / distance(receiver_p, source_b) - 1 / distance(receiver_p, source_a)
 
 
-def compute_electric_field_potential_difference(
+def potential_difference_in_point(
         receiver_p: Point, source_a: Point, source_b: Point,
         sigma: float, amperage: float) -> float:
     """Вычислить разность потенциалов в точке P.
@@ -32,7 +32,7 @@ def compute_electric_field_potential_difference(
     return coeff * (1 / distance(receiver_p, source_b) - 1 / distance(receiver_p, source_a))
 
 
-def compute_electric_field_potential_difference(
+def potential_difference_in_line(
         receiver_m: Point, receiver_n: Point, source_a: Point, source_b: Point,
         sigma: float, amperage: float) -> float:
     """Вычислить разность потенциалов в линии MN.
@@ -53,7 +53,27 @@ def compute_electric_field_potential_difference(
     return coeff * (m_point_potential - n_point_potential)
 
 
-def compute_potential_derivative(
+def potential_derivative_in_point(
+        receiver_p: Point, source_a: Point, source_b: Point,
+        sigma_i: float, amperage: float) -> float:
+    """Вычислить значение производной потенциала по сигма в точке sigma_i.
+
+
+    :param receiver_p: точка P приёмника тока
+    :param source_a: координата A электрода источника поля
+    :param source_b: координата B электрода источника поля
+    :param sigma_i: i-я удельная электрическая проводимость
+    :param amperage: сила тока
+
+    :return: значение производной в точке sigma_i.
+    """
+
+    sigma_square = sigma_i ** 2
+    derivative_coeff = - amperage / (2 * pi * sigma_square)
+    return derivative_coeff * __pre_potential__(receiver_p, source_a, source_b)
+
+
+def potential_derivative_in_line(
         receiver_m: Point, receiver_n: Point, source_a: Point, source_b: Point,
         sigma_i: float, amperage: float) -> float:
     """Вычислить значение производной потенциала по сигма в точке sigma_i.

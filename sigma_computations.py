@@ -27,7 +27,7 @@ def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers
 
     synthetic_potentials = []
     for receiver in receivers:
-        synthetic_pot = pots.compute_electric_field_potential_difference(
+        synthetic_pot = pots.potential_difference_in_line(
             receiver_m=receiver[0],
             receiver_n=receiver[1],
             source_a=source_a,
@@ -44,7 +44,7 @@ def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers
     while functional_value > epsilon:
         new_potentials = []
         for receiver in receivers:
-            potential = pots.compute_electric_field_potential_difference(
+            potential = pots.potential_difference_in_line(
                 receiver_m=receiver[0],
                 receiver_n=receiver[1],
                 source_a=source_a,
@@ -123,12 +123,12 @@ def __compute_new_sigma__(
     vector_value = 0
 
     for i in range(receiver_quantity):
-        der_potential = pots.compute_potential_derivative(
+        der_potential = pots.potential_derivative_in_line(
             receivers[i][0], receivers[i][1], source_a, source_b, sigma_i, amperage
         )
         matrix_value += (omega[i] * der_potential) ** 2
 
-        potential = pots.compute_electric_field_potential_difference(
+        potential = pots.potential_difference_in_line(
             receivers[i][0], receivers[i][1], source_a, source_b, sigma_i, amperage
         )
         vector_value -= (omega[i] ** 2) * der_potential * (potential - prev_potentials[i])
