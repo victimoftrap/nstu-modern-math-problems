@@ -9,6 +9,10 @@ if __name__ == "__main__":
                  LineReceiver(Point(500, 0, 0), Point(600, 0, 0)),
                  LineReceiver(Point(1000, 0, 0), Point(1100, 0, 0))]
 
+    # receivers = [DotReceiver(Point(200, 0, 0)),
+    #              DotReceiver(Point(500, 0, 0)),
+    #              DotReceiver(Point(1000, 0, 0))]
+
     true_sigma = 0.1
     initial_sigma = 0.01
     amperage = 1

@@ -25,6 +25,7 @@ def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers
     source_b = field_source[1]
     working_sigma = initial_sigma
     functional_value = float_info.max
+    prev_functional_value = float_info.min
 
     synthetic_potentials = []
     for receiver in receivers:
@@ -54,7 +55,7 @@ def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers
     for synth_pot in synthetic_potentials:
         synthetic_omega.append(1 / synth_pot)
 
-    while functional_value > epsilon:
+    while abs(functional_value - prev_functional_value) > epsilon:
         new_potentials = []
         for receiver in receivers:
             potential = 0
@@ -78,6 +79,7 @@ def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers
                 )
             new_potentials.append(potential)
 
+        prev_functional_value = functional_value
         functional_value = __compute_functional__(
             current_potentials=new_potentials,
             prev_potentials=synthetic_potentials,
