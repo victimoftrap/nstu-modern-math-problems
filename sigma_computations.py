@@ -7,25 +7,10 @@ from sys import float_info
 from typing import Tuple, List
 
 
-def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers: List[AbstractReceiver],
-                                    true_sigma: float, initial_sigma: float, amperage: float) -> float:
-    """Вычислить значение удельной электрической проводимости sigma.
-
-    :param field_source: координаты источника электрического поля
-    :param receivers: координаты приёмников
-    :param true_sigma: значение sigma, взятое за истинное
-    :param initial_sigma: начальное значение sigma
-    :param amperage: сила тока
-
-    :return: вычисленное значение sigma.
-    """
-    epsilon = float_info.epsilon
-
+def generate_synthetic_potentials(field_source: Tuple[Point, Point], receivers: List[AbstractReceiver],
+                                  true_sigma: float, amperage: float) -> List[float]:
     source_a = field_source[0]
     source_b = field_source[1]
-    working_sigma = initial_sigma
-    functional_value = float_info.max
-    prev_functional_value = float_info.min
 
     synthetic_potentials = []
     for receiver in receivers:
@@ -50,6 +35,28 @@ def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers
             )
 
         synthetic_potentials.append(synthetic_pot)
+    return synthetic_potentials
+
+
+def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers: List[AbstractReceiver],
+                                    synthetic_potentials: List[float], initial_sigma: float, amperage: float) -> float:
+    """Вычислить значение удельной электрической проводимости sigma.
+
+    :param field_source: координаты источника электрического поля
+    :param receivers: координаты приёмников
+    :param synthetic_potentials: сгенерированные в прямой задаче потенциалы
+    :param initial_sigma: начальное значение sigma
+    :param amperage: сила тока
+
+    :return: вычисленное значение sigma.
+    """
+    epsilon = float_info.epsilon
+
+    source_a = field_source[0]
+    source_b = field_source[1]
+    working_sigma = initial_sigma
+    functional_value = float_info.max
+    prev_functional_value = float_info.min
 
     synthetic_omega = []
     for synth_pot in synthetic_potentials:
@@ -165,7 +172,7 @@ def __compute_new_sigma__(
             pot_derivative = pots.potential_derivative_in_point(
                 receiver.coordinate_m, source_a, source_b, sigma_i, amperage
             )
-            potential = pots.potential_derivative_in_point(
+            potential = pots.potential_difference_in_point(
                 receiver.coordinate_m, source_a, source_b, sigma_i, amperage
             )
 
