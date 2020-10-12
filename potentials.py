@@ -1,9 +1,12 @@
+import random
 from math import pi
+from typing import List
+
 from point import Point, distance
 
 
 def __pre_potential__(receiver_p: Point, source_a: Point, source_b: Point) -> float:
-    """Вычилисть значение, используемое в вычислении потенциала.
+    """Вычислить значение, используемое в вычислении потенциала.
 
     :param receiver_p: координата точки приёмника
     :param source_a: координата A электрода источника поля
@@ -29,7 +32,7 @@ def potential_difference_in_point(
     """
 
     coeff = amperage / (2 * pi * sigma)
-    return coeff * (1 / distance(receiver_p, source_b) - 1 / distance(receiver_p, source_a))
+    return coeff * __pre_potential__(receiver_p, source_a, source_b)
 
 
 def potential_difference_in_line(
@@ -95,3 +98,7 @@ def potential_derivative_in_line(
     m_point_potential = __pre_potential__(receiver_m, source_a, source_b)
     n_point_potential = __pre_potential__(receiver_n, source_a, source_b)
     return derivative_coeff * (m_point_potential - n_point_potential)
+
+
+def noise(potentials: List[float]) -> List[float]:
+    return list(map(lambda pot: pot * (1 + random.uniform(-0.05, 0.05)), potentials))
