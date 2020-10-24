@@ -33,18 +33,49 @@ if __name__ == "__main__":
         amperage=amperage
     )
 
-    print("Значение удельной электрической проводимости (sigma):", computed_sigma)
+    print("Значение удельной электрической проводимости (sigma):", computed_sigma, '\n')
 
-    noised_potentials = noise(potentials)
+    noised_potentials_1 = noise(potentials, 1)
 
-    print("Зашумленные данные:", noised_potentials)
+    # print("Данные с зашумлением в одном приемнике:", noised_potentials_1)
 
-    computed_sigma_noised = sc.compute_electrical_conductivity(
+    noised_potentials_2 = noise(potentials, 2)
+
+    # print("Данные с зашумлением в двух приемниках:", noised_potentials_2)
+
+    # noised_potentials_3 = noise(potentials, 3)
+    #
+    # print("Данные с зашумлением в трех приемниках:", noised_potentials_3)
+
+    computed_sigma_noised_1 = sc.compute_electrical_conductivity(
         field_source=field_source,
         receivers=receivers,
-        synthetic_potentials=noised_potentials,
+        synthetic_potentials=noised_potentials_1,
         initial_sigma=initial_sigma,
         amperage=amperage
     )
 
-    print("Значение удельной электрической проводимости (sigma) на зашумленных данных:", computed_sigma_noised)
+    print("Значение удельной электрической проводимости (sigma) на зашумленных в одном приемнике данных:",
+          computed_sigma_noised_1, '\n')
+
+    computed_sigma_noised_2 = sc.compute_electrical_conductivity(
+        field_source=field_source,
+        receivers=receivers,
+        synthetic_potentials=noised_potentials_2,
+        initial_sigma=initial_sigma,
+        amperage=amperage
+    )
+
+    print("Значение удельной электрической проводимости (sigma) на зашумленных в двух приемниках данных:",
+          computed_sigma_noised_2)
+
+    # computed_sigma_noised_3 = sc.compute_electrical_conductivity(
+    #     field_source=field_source,
+    #     receivers=receivers,
+    #     synthetic_potentials=noised_potentials_3,
+    #     initial_sigma=initial_sigma,
+    #     amperage=amperage
+    # )
+    #
+    # print("Значение удельной электрической проводимости (sigma) на зашумленных в трех приемниках данных:",
+    #       computed_sigma_noised_3)

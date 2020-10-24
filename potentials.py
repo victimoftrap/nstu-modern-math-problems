@@ -98,13 +98,17 @@ def potential_derivative_in_line(
     return derivative_coeff * (m_point_potential - n_point_potential)
 
 
-def noise(potentials: List[float]) -> List[float]:
+def noise(potentials: List[float], noise_number: int) -> List[float]:
     """Сделать зашумление входных данных.
 
     :param potentials: входные данные
+    :param noise_number: количество зашумленных приемников
 
     :return: список с зашумлёнными данными.
     """
-    left_bound = -0.05
-    right_bound = 0.05
-    return list(map(lambda pot: pot * (1 + random.uniform(left_bound, right_bound)), potentials))
+    noise_bound = 0.05
+    receiver_number = len(potentials)
+    noised_potentials = [x for x in potentials]
+    for i in range(receiver_number - 1, receiver_number - noise_number - 1, -1):
+        noised_potentials[i] *= (1 + random.uniform(-noise_bound, noise_bound))
+    return noised_potentials
