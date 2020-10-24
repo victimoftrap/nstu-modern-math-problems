@@ -61,7 +61,6 @@ def potential_derivative_in_point(
         sigma_i: float, amperage: float) -> float:
     """Вычислить значение производной потенциала по сигма в точке sigma_i.
 
-
     :param receiver_p: точка P приёмника тока
     :param source_a: координата A электрода источника поля
     :param source_b: координата B электрода источника поля
@@ -80,7 +79,6 @@ def potential_derivative_in_line(
         receiver_m: Point, receiver_n: Point, source_a: Point, source_b: Point,
         sigma_i: float, amperage: float) -> float:
     """Вычислить значение производной потенциала по сигма в линии sigma_i.
-
 
     :param receiver_m: точка M приёмника тока
     :param receiver_n: точка N приёмника тока
@@ -101,4 +99,12 @@ def potential_derivative_in_line(
 
 
 def noise(potentials: List[float]) -> List[float]:
-    return list(map(lambda pot: pot * (1 + random.uniform(-0.05, 0.05)), potentials))
+    """Сделать зашумление входных данных.
+
+    :param potentials: входные данные
+
+    :return: список с зашумлёнными данными.
+    """
+    left_bound = -0.05
+    right_bound = 0.05
+    return list(map(lambda pot: pot * (1 + random.uniform(left_bound, right_bound)), potentials))

@@ -9,6 +9,15 @@ from typing import Tuple, List
 
 def generate_synthetic_potentials(field_source: Tuple[Point, Point], receivers: List[AbstractReceiver],
                                   true_sigma: float, amperage: float) -> List[float]:
+    """Сгенерировать синтетические потенциалы по предполагаемой sigma (решить прямую задачу разведки).
+
+    :param field_source: координаты электродов источников поля
+    :param receivers: координаты точек приёмников
+    :param true_sigma: выбранное значение sigma, на котором будут сгенерированы значения потенциалов
+    :param amperage: сила тока
+
+    :return: список значений синтетических потенциалов (решение прямой задачи).
+    """
     source_a = field_source[0]
     source_b = field_source[1]
 
@@ -40,7 +49,7 @@ def generate_synthetic_potentials(field_source: Tuple[Point, Point], receivers: 
 
 def compute_electrical_conductivity(field_source: Tuple[Point, Point], receivers: List[AbstractReceiver],
                                     synthetic_potentials: List[float], initial_sigma: float, amperage: float) -> float:
-    """Вычислить значение удельной электрической проводимости sigma.
+    """Вычислить значение удельной электрической проводимости sigma (решить обратную задачу).
 
     :param field_source: координаты источника электрического поля
     :param receivers: координаты приёмников
